@@ -1,70 +1,85 @@
 #include <stdio.h>
 
 #define TAMANHO_TABULEIRO 10
-#define TAMANHO_NAVIO 3
+#define TAMANHO_HABILIDADE 5
+
+// Função para criar a matriz de habilidade de cone
+void criarCone(int habilidade[TAMANHO_HABILIDADE][TAMANHO_HABILIDADE]) {
+    for (int i = 0; i < TAMANHO_HABILIDADE; i++) {
+        for (int j = 0; j < TAMANHO_HABILIDADE; j++) {
+            habilidade[i][j] = (j >= TAMANHO_HABILIDADE / 2 - i && j <= TAMANHO_HABILIDADE / 2 + i) ? 1 : 0;
+        }
+    }
+}
+
+// Função para criar a matriz de habilidade de cruz
+void criarCruz(int habilidade[TAMANHO_HABILIDADE][TAMANHO_HABILIDADE]) {
+    for (int i = 0; i < TAMANHO_HABILIDADE; i++) {
+        for (int j = 0; j < TAMANHO_HABILIDADE; j++) {
+            habilidade[i][j] = (i == TAMANHO_HABILIDADE / 2 || j == TAMANHO_HABILIDADE / 2) ? 1 : 0;
+        }
+    }
+}
+
+// Função para criar a matriz de habilidade de octaedro
+void criarOctaedro(int habilidade[TAMANHO_HABILIDADE][TAMANHO_HABILIDADE]) {
+    for (int i = 0; i < TAMANHO_HABILIDADE; i++) {
+        for (int j = 0; j < TAMANHO_HABILIDADE; j++) {
+            habilidade[i][j] = (i + j >= TAMANHO_HABILIDADE / 2 && i + j <= TAMANHO_HABILIDADE + TAMANHO_HABILIDADE / 2 - 1 &&
+                              i - j <= TAMANHO_HABILIDADE / 2 && j - i <= TAMANHO_HABILIDADE / 2) ? 1 : 0;
+        }
+    }
+}
 
 int main() {
     // Inicializa o tabuleiro com água (0)
     int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO] = {0};
 
-    // Coordenadas dos navios
-    int navio_horizontal_linha = 2;
-    int navio_horizontal_coluna = 3;
+    // Posiciona navios (exemplo)
+    tabuleiro[2][3] = 3;
+    tabuleiro[2][4] = 3;
+    tabuleiro[2][5] = 3;
 
-    int navio_vertical_linha = 6;
-    int navio_vertical_coluna = 1;
+    // Matrizes de habilidade
+    int cone[TAMANHO_HABILIDADE][TAMANHO_HABILIDADE] = {0};
+    int cruz[TAMANHO_HABILIDADE][TAMANHO_HABILIDADE] = {0};
+    int octaedro[TAMANHO_HABILIDADE][TAMANHO_HABILIDADE] = {0};
 
-    int navio_diagonal1_linha = 0;
-    int navio_diagonal1_coluna = 0;
+    // Cria as habilidades
+    criarCone(cone);
+    criarCruz(cruz);
+    criarOctaedro(octaedro);
 
-    int navio_diagonal2_linha = 0;
-    int navio_diagonal2_coluna = 9;
+    // Ponto de origem das habilidades no tabuleiro
+    int cone_linha = 2;
+    int cone_coluna = 4;
+    int cruz_linha = 5;
+    int cruz_coluna = 5;
+    int octaedro_linha = 7;
+    int octaedro_coluna = 5;
 
-    // Validação das coordenadas dos navios
-    if (navio_horizontal_linha < 0 || navio_horizontal_linha >= TAMANHO_TABULEIRO ||
-        navio_horizontal_coluna < 0 || navio_horizontal_coluna + TAMANHO_NAVIO > TAMANHO_TABULEIRO) {
-        printf("Coordenadas do navio horizontal inválidas.\n");
-        return 1;
-    }
+    // Aplica habilidades no tabuleiro
+    for (int i = 0; i < TAMANHO_HABILIDADE; i++) {
+        for (int j = 0; j < TAMANHO_HABILIDADE; j++) {
+            if (cone[i][j] == 1 && cone_linha - TAMANHO_HABILIDADE / 2 + i >= 0 && cone_linha - TAMANHO_HABILIDADE / 2 + i < TAMANHO_TABULEIRO &&
+                cone_coluna - TAMANHO_HABILIDADE / 2 + j >= 0 && cone_coluna - TAMANHO_HABILIDADE / 2 + j < TAMANHO_TABULEIRO) {
+                tabuleiro[cone_linha - TAMANHO_HABILIDADE / 2 + i][cone_coluna - TAMANHO_HABILIDADE / 2 + j] = 5;
+            }
 
-    if (navio_vertical_linha < 0 || navio_vertical_linha + TAMANHO_NAVIO > TAMANHO_TABULEIRO ||
-        navio_vertical_coluna < 0 || navio_vertical_coluna >= TAMANHO_TABULEIRO) {
-        printf("Coordenadas do navio vertical inválidas.\n");
-        return 1;
-    }
+            if (cruz[i][j] == 1 && cruz_linha - TAMANHO_HABILIDADE / 2 + i >= 0 && cruz_linha - TAMANHO_HABILIDADE / 2 + i < TAMANHO_TABULEIRO &&
+                cruz_coluna - TAMANHO_HABILIDADE / 2 + j >= 0 && cruz_coluna - TAMANHO_HABILIDADE / 2 + j < TAMANHO_TABULEIRO) {
+                tabuleiro[cruz_linha - TAMANHO_HABILIDADE / 2 + i][cruz_coluna - TAMANHO_HABILIDADE / 2 + j] = 5;
+            }
 
-    if (navio_diagonal1_linha < 0 || navio_diagonal1_linha + TAMANHO_NAVIO > TAMANHO_TABULEIRO ||
-        navio_diagonal1_coluna < 0 || navio_diagonal1_coluna + TAMANHO_NAVIO > TAMANHO_TABULEIRO) {
-        printf("Coordenadas do navio diagonal 1 inválidas.\n");
-        return 1;
-    }
-
-    if (navio_diagonal2_linha < 0 || navio_diagonal2_linha + TAMANHO_NAVIO > TAMANHO_TABULEIRO ||
-        navio_diagonal2_coluna < 0 || navio_diagonal2_coluna - TAMANHO_NAVIO + 1 < 0) {
-        printf("Coordenadas do navio diagonal 2 inválidas.\n");
-        return 1;
-    }
-
-    // Posiciona os navios
-    for (int i = 0; i < TAMANHO_NAVIO; i++) {
-        tabuleiro[navio_horizontal_linha][navio_horizontal_coluna + i] = 3;
-        tabuleiro[navio_vertical_linha + i][navio_vertical_coluna] = 3;
-        tabuleiro[navio_diagonal1_linha + i][navio_diagonal1_coluna + i] = 3;
-        tabuleiro[navio_diagonal2_linha + i][navio_diagonal2_coluna - i] = 3;
-    }
-
-    // Validação de sobreposição (exemplo simples)
-    for (int i = 0; i < TAMANHO_TABULEIRO; i++) {
-        for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
-            if (tabuleiro[i][j] == 3) {
-                // Aqui você pode adicionar uma lógica mais robusta para verificar sobreposições
-                // Por simplicidade, este exemplo não implementa uma validação completa
+            if (octaedro[i][j] == 1 && octaedro_linha - TAMANHO_HABILIDADE / 2 + i >= 0 && octaedro_linha - TAMANHO_HABILIDADE / 2 + i < TAMANHO_TABULEIRO &&
+                octaedro_coluna - TAMANHO_HABILIDADE / 2 + j >= 0 && octaedro_coluna - TAMANHO_HABILIDADE / 2 + j < TAMANHO_TABULEIRO) {
+                tabuleiro[octaedro_linha - TAMANHO_HABILIDADE / 2 + i][octaedro_coluna - TAMANHO_HABILIDADE / 2 + j] = 5;
             }
         }
     }
 
     // Exibe o tabuleiro
-    printf("Tabuleiro:\n");
+    printf("Tabuleiro com Habilidades:\n");
     for (int i = 0; i < TAMANHO_TABULEIRO; i++) {
         for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
             printf("%d ", tabuleiro[i][j]);
